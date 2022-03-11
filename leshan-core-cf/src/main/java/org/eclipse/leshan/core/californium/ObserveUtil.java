@@ -26,6 +26,7 @@ import java.util.Map.Entry;
 
 import org.eclipse.californium.core.coap.CoAP;
 import org.eclipse.californium.core.coap.Request;
+import org.eclipse.californium.core.observe.Observation;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.observation.CompositeObservation;
 import org.eclipse.leshan.core.observation.SingleObservation;
@@ -42,12 +43,34 @@ public class ObserveUtil {
     public static final String CTX_ENDPOINT = "leshan-endpoint";
     public static final String CTX_REGID = "leshan-regId";
     public static final String CTX_LWM2M_PATH = "leshan-path";
+    public static final String CTX_CF_OBERSATION = "leshan-cf-obs";
+
+    public static org.eclipse.leshan.core.observation.Observation createLwM2mObservation(Observation observation,
+            String serializedObservation) {
+        if (observation == null)
+            return null;
+
+        if (observation.getRequest().getCode() == CoAP.Code.GET) {
+            return ObserveUtil.createLwM2mObservation(observation.getRequest(), serializedObservation);
+        } else if (observation.getRequest().getCode() == CoAP.Code.FETCH) {
+            return ObserveUtil.createLwM2mCompositeObservation(observation.getRequest(), serializedObservation);
+        } else {
+            throw new IllegalStateException("Observation request can be GET or FETCH only");
+        }
+    }
+
+    public static SingleObservation createLwM2mObservation(Request request) {
+        return createLwM2mObservation(request, null);
+    }
 
     /**
      * Create a LWM2M observation from a CoAP request.
      */
-    public static SingleObservation createLwM2mObservation(Request request) {
+    public static SingleObservation createLwM2mObservation(Request request, String serializedObservation) {
         ObserveCommon observeCommon = new ObserveCommon(request);
+        if (serializedObservation != null) {
+            observeCommon.context.put(CTX_CF_OBERSATION, serializedObservation);
+        }
 
         if (observeCommon.lwm2mPaths.size() != 1) {
             throw new IllegalStateException(
@@ -59,7 +82,14 @@ public class ObserveUtil {
     }
 
     public static CompositeObservation createLwM2mCompositeObservation(Request request) {
+        return createLwM2mCompositeObservation(request, null);
+    }
+
+    public static CompositeObservation createLwM2mCompositeObservation(Request request, String serializedObservation) {
         ObserveCommon observeCommon = new ObserveCommon(request);
+        if (serializedObservation != null) {
+            observeCommon.context.put(CTX_CF_OBERSATION, serializedObservation);
+        }
 
         return new CompositeObservation(request.getToken().getBytes(), observeCommon.regId, observeCommon.lwm2mPaths,
                 observeCommon.requestContentFormat, observeCommon.responseContentFormat, observeCommon.context);
@@ -105,6 +135,7 @@ public class ObserveUtil {
             if (request.getOptions().hasAccept()) {
                 responseContentFormat = ContentFormat.fromCode(request.getOptions().getAccept());
             }
+
         }
     }
 
@@ -202,6 +233,10 @@ public class ObserveUtil {
 
     public static String extractEndpoint(org.eclipse.californium.core.observe.Observation observation) {
         return observation.getRequest().getUserContext().get(CTX_ENDPOINT);
+    }
+
+    public static String extractSerializedObservation(org.eclipse.leshan.core.observation.Observation observation) {
+        return observation.getContext().get(CTX_CF_OBERSATION);
     }
 
     /**

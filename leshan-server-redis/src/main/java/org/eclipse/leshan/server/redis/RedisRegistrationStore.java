@@ -850,4 +850,10 @@ public class RedisRegistrationStore implements CaliforniumRegistrationStore, Sta
     public void setExecutor(ScheduledExecutorService executor) {
         // TODO should we reuse californium executor ?
     }
+
+    @Override
+    public Collection<Observation> addObservation(String registrationId, Observation observation, boolean addIfAbsent) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

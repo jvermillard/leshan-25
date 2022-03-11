@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.leshan.server.californium.LeshanServer;
+import org.eclipse.leshan.server.LeshanServer2;
 import org.eclipse.leshan.server.core.demo.json.PublicKeySerDes;
 import org.eclipse.leshan.server.core.demo.json.X509CertificateSerDes;
 
@@ -41,11 +41,11 @@ public class ServerServlet extends HttpServlet {
     private final X509CertificateSerDes certificateSerDes;
     private final PublicKeySerDes publicKeySerDes;
 
-    private final LeshanServer server;
+    private final LeshanServer2 server;
     private final PublicKey publicKey;
     private final X509Certificate serverCertificate;
 
-    public ServerServlet(LeshanServer server, X509Certificate serverCertificate) {
+    public ServerServlet(LeshanServer2 server, X509Certificate serverCertificate) {
         this.server = server;
         certificateSerDes = new X509CertificateSerDes();
         publicKeySerDes = new PublicKeySerDes();
@@ -54,7 +54,7 @@ public class ServerServlet extends HttpServlet {
         this.serverCertificate = serverCertificate;
     }
 
-    public ServerServlet(LeshanServer server, PublicKey serverPublicKey) {
+    public ServerServlet(LeshanServer2 server, PublicKey serverPublicKey) {
         this.server = server;
         certificateSerDes = new X509CertificateSerDes();
         publicKeySerDes = new PublicKeySerDes();
@@ -84,13 +84,13 @@ public class ServerServlet extends HttpServlet {
             return;
         }
 
+        // TODO port
         if ("endpoint".equals(path[0])) {
             resp.setStatus(HttpServletResponse.SC_OK);
             resp.setContentType("application/json");
             resp.getOutputStream()
                     .write(String
-                            .format("{ \"securedEndpointPort\":\"%s\", \"unsecuredEndpointPort\":\"%s\"}",
-                                    server.getSecuredAddress().getPort(), server.getUnsecuredAddress().getPort())
+                            .format("{ \"securedEndpointPort\":\"%s\", \"unsecuredEndpointPort\":\"%s\"}", 5684, 5683)
                             .getBytes(StandardCharsets.UTF_8));
             return;
         }

@@ -73,7 +73,7 @@ import org.eclipse.leshan.core.response.ReadResponse;
 import org.eclipse.leshan.core.response.WriteAttributesResponse;
 import org.eclipse.leshan.core.response.WriteCompositeResponse;
 import org.eclipse.leshan.core.response.WriteResponse;
-import org.eclipse.leshan.server.californium.LeshanServer;
+import org.eclipse.leshan.server.LeshanServer2;
 import org.eclipse.leshan.server.demo.servlet.json.JacksonLinkSerializer;
 import org.eclipse.leshan.server.demo.servlet.json.JacksonLwM2mNodeDeserializer;
 import org.eclipse.leshan.server.demo.servlet.json.JacksonLwM2mNodeSerializer;
@@ -109,11 +109,11 @@ public class ClientServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private final LeshanServer server;
+    private final LeshanServer2 server;
     private final ObjectMapper mapper;
     private final LwM2mAttributeParser attributeParser;
 
-    public ClientServlet(LeshanServer server) {
+    public ClientServlet(LeshanServer2 server) {
         this.server = server;
 
         mapper = new ObjectMapper();

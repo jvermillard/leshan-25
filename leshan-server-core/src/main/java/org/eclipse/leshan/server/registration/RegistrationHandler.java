@@ -17,6 +17,7 @@
  *******************************************************************************/
 package org.eclipse.leshan.server.registration;
 
+import java.net.InetSocketAddress;
 import java.util.Date;
 
 import org.eclipse.leshan.core.LwM2m.LwM2mVersion;
@@ -51,7 +52,8 @@ public class RegistrationHandler {
         this.registrationIdProvider = registrationIdProvider;
     }
 
-    public SendableResponse<RegisterResponse> register(Identity sender, RegisterRequest registerRequest) {
+    public SendableResponse<RegisterResponse> register(Identity sender, RegisterRequest registerRequest,
+            InetSocketAddress endpointUsed) {
 
         Registration.Builder builder = new Registration.Builder(
                 registrationIdProvider.getRegistrationId(registerRequest), registerRequest.getEndpointName(), sender);
@@ -61,7 +63,8 @@ public class RegistrationHandler {
                 .lifeTimeInSec(registerRequest.getLifetime()).bindingMode(registerRequest.getBindingMode())
                 .queueMode(registerRequest.getQueueMode()).objectLinks(registerRequest.getObjectLinks())
                 .smsNumber(registerRequest.getSmsNumber()).registrationDate(new Date()).lastUpdate(new Date())
-                .additionalRegistrationAttributes(registerRequest.getAdditionalAttributes());
+                .additionalRegistrationAttributes(registerRequest.getAdditionalAttributes())
+                .lastEndpointUsed(endpointUsed);
 
         // We must check if the client is using the right identity.
         final Registration registration = authorizer.isAuthorized(registerRequest, builder.build(), sender);

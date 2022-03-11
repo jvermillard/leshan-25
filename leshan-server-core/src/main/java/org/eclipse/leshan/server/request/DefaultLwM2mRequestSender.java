@@ -15,7 +15,7 @@
  *     Achim Kraus (Bosch Software Innovations GmbH) - use Identity as destination
  *     Michał Wadowski (Orange) - Improved compliance with rfc6690
  *******************************************************************************/
-package org.eclipse.leshan.server.californium.request;
+package org.eclipse.leshan.server.request;
 
 import org.eclipse.leshan.core.link.lwm2m.LwM2mLinkParser;
 import org.eclipse.leshan.core.model.LwM2mModel;
@@ -40,13 +40,11 @@ import org.eclipse.leshan.server.endpoint.LwM2mEndpoint;
 import org.eclipse.leshan.server.endpoint.LwM2mEndpointsProvider;
 import org.eclipse.leshan.server.model.LwM2mModelProvider;
 import org.eclipse.leshan.server.registration.Registration;
-import org.eclipse.leshan.server.request.LowerLayerConfig;
-import org.eclipse.leshan.server.request.LwM2mRequestSender;
 
 /**
  * An implementation of {@link LwM2mRequestSender} and {@link CoapRequestSender} based on Californium.
  */
-public class CaliforniumLwM2mRequestSender implements LwM2mRequestSender {
+public class DefaultLwM2mRequestSender implements LwM2mRequestSender {
 
     private final LwM2mModelProvider modelProvider;
     private final LwM2mEndpointsProvider endpointsProvider;
@@ -61,7 +59,7 @@ public class CaliforniumLwM2mRequestSender implements LwM2mRequestSender {
      * @param decoder The {@link LwM2mDecoder} used to encode {@link LwM2mNode}.
      * @param linkParser a parser {@link LwM2mLinkParser} used to parse a CoRE Link.
      */
-    public CaliforniumLwM2mRequestSender(LwM2mEndpointsProvider endpointsProvider, LwM2mModelProvider modelProvider,
+    public DefaultLwM2mRequestSender(LwM2mEndpointsProvider endpointsProvider, LwM2mModelProvider modelProvider,
             LwM2mEncoder encoder, LwM2mDecoder decoder, LwM2mLinkParser linkParser) {
         Validate.notNull(modelProvider);
         this.modelProvider = modelProvider;

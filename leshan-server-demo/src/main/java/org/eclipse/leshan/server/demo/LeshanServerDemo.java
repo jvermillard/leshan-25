@@ -41,8 +41,9 @@ import org.eclipse.leshan.core.demo.LwM2mDemoConstant;
 import org.eclipse.leshan.core.demo.cli.ShortErrorMessageHandler;
 import org.eclipse.leshan.core.model.ObjectLoader;
 import org.eclipse.leshan.core.model.ObjectModel;
-import org.eclipse.leshan.server.californium.LeshanServer;
+import org.eclipse.leshan.server.LeshanServer2;
 import org.eclipse.leshan.server.californium.LeshanServerBuilder;
+import org.eclipse.leshan.server.californium.LeshanServerBuilder2;
 import org.eclipse.leshan.server.core.demo.json.servlet.SecurityServlet;
 import org.eclipse.leshan.server.demo.cli.LeshanServerDemoCLI;
 import org.eclipse.leshan.server.demo.servlet.ClientServlet;
@@ -89,7 +90,7 @@ public class LeshanServerDemo {
 
         try {
             // Create LWM2M Server
-            LeshanServer lwm2mServer = createLeshanServer(cli);
+            LeshanServer2 lwm2mServer = createLeshanServer(cli);
 
             // Create Web Server
             Server webServer = createJettyServer(cli, lwm2mServer);
@@ -131,9 +132,9 @@ public class LeshanServerDemo {
         }
     }
 
-    public static LeshanServer createLeshanServer(LeshanServerDemoCLI cli) throws Exception {
+    public static LeshanServer2 createLeshanServer(LeshanServerDemoCLI cli) throws Exception {
         // Prepare LWM2M server
-        LeshanServerBuilder builder = new LeshanServerBuilder();
+        LeshanServerBuilder2 builder = new LeshanServerBuilder2();
 
         // Create CoAP Config
         File configFile = new File(CF_CONFIGURATION_FILENAME);
@@ -220,7 +221,7 @@ public class LeshanServerDemo {
         return builder.build();
     }
 
-    private static Server createJettyServer(LeshanServerDemoCLI cli, LeshanServer lwServer) {
+    private static Server createJettyServer(LeshanServerDemoCLI cli, LeshanServer2 lwServer) {
         // Now prepare Jetty
         InetSocketAddress jettyAddr;
         if (cli.main.webhost == null) {
@@ -236,7 +237,8 @@ public class LeshanServerDemo {
         server.setHandler(root);
 
         // Create Servlet
-        EventServlet eventServlet = new EventServlet(lwServer, lwServer.getSecuredAddress().getPort());
+        // EventServlet eventServlet = new EventServlet(lwServer, lwServer.getSecuredAddress().getPort());
+        EventServlet eventServlet = new EventServlet(lwServer, 5684);
         ServletHolder eventServletHolder = new ServletHolder(eventServlet);
         root.addServlet(eventServletHolder, "/api/event/*");
 
