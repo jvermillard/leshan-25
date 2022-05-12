@@ -205,6 +205,12 @@ export default {
           s.certificateUsage = c.security.details.certificate_usage;
           break;
       }
+      if (c.oscore) {
+        s.oscore = {};
+        s.oscore.oscoreSenderId = fromHex(c.oscore.sid);
+        s.oscore.oscoreMasterSecret = fromHex(c.oscore.msec);
+        s.oscore.oscoreRecipientId = fromHex(c.oscore.rid);
+      }
       return s;
     },
 
@@ -257,6 +263,13 @@ export default {
             },
           },
         ];
+        if (dmServer.oscore) {
+          c.dm[0].oscore = {
+            oscoreSenderId: dmServer.oscore.oscoreSenderId,
+            oscoreMasterSecret: dmServer.oscore.oscoreMasterSecret,
+            oscoreRecipientId: dmServer.oscore.oscoreRecipientId,
+          };
+        }
       }
       if (config.bs) {
         let bsServer = this.formatData(config.bs);
@@ -278,6 +291,13 @@ export default {
             },
           },
         ];
+        if (bsServer.oscore) {
+          c.bs[0].oscore = {
+            oscoreSenderId: bsServer.oscore.oscoreSenderId,
+            oscoreMasterSecret: bsServer.oscore.oscoreMasterSecret,
+            oscoreRecipientId: bsServer.oscore.oscoreRecipientId,
+          };
+        }
       }
 
       if (config.security) {
