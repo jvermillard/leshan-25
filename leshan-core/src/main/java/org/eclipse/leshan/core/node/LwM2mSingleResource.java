@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import org.eclipse.leshan.core.link.Link;
 import org.eclipse.leshan.core.model.ResourceModel.Type;
 import org.eclipse.leshan.core.util.datatype.ULong;
 
@@ -113,6 +114,11 @@ public class LwM2mSingleResource implements LwM2mResource {
             break;
         case OBJLNK:
             if (!(value instanceof ObjectLink))
+                throw new LwM2mNodeException(
+                        String.format(doesNotMatchMessage, value.getClass().getSimpleName(), type));
+            break;
+        case CORELINK:
+            if (!(value instanceof Link[]))
                 throw new LwM2mNodeException(
                         String.format(doesNotMatchMessage, value.getClass().getSimpleName(), type));
             break;

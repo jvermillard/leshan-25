@@ -22,6 +22,9 @@ function valueToString(value, type) {
   } else if (type == "time") {
     let date = new Date(value);
     return date.toDateString()+ " - " +  date.toLocaleTimeString() + " (" + date.getTime()/1000 + "s)";
+  } else if (type == "corelink") {
+    // for now display the corelink as a json structure
+    return JSON.stringify(value);
   } else {
     return String(value);
   }

@@ -19,10 +19,14 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.leshan.core.link.DefaultLinkParser;
+import org.eclipse.leshan.core.link.LinkParseException;
+import org.eclipse.leshan.core.link.LinkParser;
 import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.model.ObjectModel;
 import org.eclipse.leshan.core.model.ResourceModel;
 import org.eclipse.leshan.core.model.ResourceModel.Type;
+import org.eclipse.leshan.core.node.InvalidLwM2mPathException;
 import org.eclipse.leshan.core.node.LwM2mIncompletePath;
 import org.eclipse.leshan.core.node.LwM2mMultipleResource;
 import org.eclipse.leshan.core.node.LwM2mNode;
@@ -30,7 +34,6 @@ import org.eclipse.leshan.core.node.LwM2mNodeException;
 import org.eclipse.leshan.core.node.LwM2mObject;
 import org.eclipse.leshan.core.node.LwM2mObjectInstance;
 import org.eclipse.leshan.core.node.LwM2mPath;
-import org.eclipse.leshan.core.node.InvalidLwM2mPathException;
 import org.eclipse.leshan.core.node.LwM2mResource;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
 import org.eclipse.leshan.core.node.LwM2mSingleResource;
@@ -48,6 +51,9 @@ import org.slf4j.LoggerFactory;
 public class LwM2mNodeTlvDecoder implements NodeDecoder {
 
     private static final Logger LOG = LoggerFactory.getLogger(LwM2mNodeTlvDecoder.class);
+
+    // parser used for core link parser
+    private LinkParser linkParser = new DefaultLinkParser();
 
     @Override
     public <T extends LwM2mNode> T decode(byte[] content, LwM2mPath path, LwM2mModel model, Class<T> nodeClass)
@@ -284,10 +290,12 @@ public class LwM2mNodeTlvDecoder implements NodeDecoder {
                 return value;
             case OBJLNK:
                 return TlvDecoder.decodeObjlnk(value);
+            case CORELINK:
+                return linkParser.parseCoreLinkFormat(value);
             default:
                 throw new CodecException("Unsupported type %s for path %s", expectedType, path);
             }
-        } catch (TlvException e) {
+        } catch (TlvException | LinkParseException e) {
             throw new CodecException(e, "Invalid content [%s] for type %s for path %s", Hex.encodeHexString(value),
                     expectedType, path);
         }
