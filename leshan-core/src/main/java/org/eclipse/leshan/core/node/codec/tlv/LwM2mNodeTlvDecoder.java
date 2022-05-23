@@ -19,9 +19,9 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.leshan.core.link.DefaultLinkParser;
 import org.eclipse.leshan.core.link.LinkParseException;
 import org.eclipse.leshan.core.link.LinkParser;
+import org.eclipse.leshan.core.link.lwm2m.DefaultLwM2mLinkParser;
 import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.model.ObjectModel;
 import org.eclipse.leshan.core.model.ResourceModel;
@@ -53,7 +53,7 @@ public class LwM2mNodeTlvDecoder implements NodeDecoder {
     private static final Logger LOG = LoggerFactory.getLogger(LwM2mNodeTlvDecoder.class);
 
     // parser used for core link parser
-    private LinkParser linkParser = new DefaultLinkParser();
+    private LinkParser linkParser = new DefaultLwM2mLinkParser();
 
     @Override
     public <T extends LwM2mNode> T decode(byte[] content, LwM2mPath path, LwM2mModel model, Class<T> nodeClass)
@@ -64,6 +64,20 @@ public class LwM2mNodeTlvDecoder implements NodeDecoder {
         } catch (TlvException | LwM2mNodeException | InvalidLwM2mPathException e) {
             throw new CodecException(String.format("Unable to decode tlv for path [%s]", path), e);
         }
+    }
+    
+    /**
+     * Get the Link parser used for parsing core links.
+     */
+    public LinkParser getLinkParser() {
+        return linkParser;
+    }
+
+    /**
+     * Set the Link parser used for parsing core links. If not set the {@link DefaultLwM2mLinkParser} is used.
+     */
+    public void setLinkParser(LinkParser linkParser) {
+        this.linkParser = linkParser;
     }
 
     @SuppressWarnings("unchecked")

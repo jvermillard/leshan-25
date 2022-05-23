@@ -21,6 +21,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Map.Entry;
 
+import org.eclipse.leshan.core.link.DefaultLinkSerializer;
+import org.eclipse.leshan.core.link.Link;
+import org.eclipse.leshan.core.link.LinkSerializer;
 import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.model.ResourceModel;
 import org.eclipse.leshan.core.model.ResourceModel.Type;
@@ -66,6 +69,8 @@ public class LwM2mNodeTlvEncoder implements NodeEncoder {
     }
 
     private static class InternalEncoder implements LwM2mNodeVisitor {
+    
+        private LinkSerializer linkSerializer = new DefaultLinkSerializer();
 
         // visitor inputs
         private LwM2mPath path;
@@ -216,6 +221,8 @@ public class LwM2mNodeTlvEncoder implements NodeEncoder {
                     return (byte[]) value;
                 case OBJLNK:
                     return TlvEncoder.encodeObjlnk((ObjectLink) value);
+                case CORELINK:
+                    return TlvEncoder.encodeString(linkSerializer.serializeCoreLinkFormat((Link[]) value));
                 default:
                     throw new CodecException("Invalid value %s for type %s of %s", value, type, path);
                 }
